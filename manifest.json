@@ -1,5 +1,5 @@
 {
-  "name": "NutriCore — Your Health Companion",
+  "name": "NutriCore — Your Health Companion","id": "freedomverse.nutricore",
   "short_name": "NutriCore",
   "description": "Your personal health and nutrition companion. Learn to cook, plan meals and eat right.",
   "start_url": "/index.html",
