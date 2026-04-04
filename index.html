@@ -241,6 +241,32 @@
           .catch(err => console.log('SW error:', err));
       });
     }
-  </script>
+ function openWhatsApp() {
+  var msg = encodeURIComponent("Hi, I just paid R49 for NutriCore Premium 🌿\nPlease send my unlock code.");
+  window.open("https://wa.me/27XXXXXXXXX?text=" + msg, "_blank");
+}
+
+function unlockPremium() {
+  var input = document.getElementById("unlock-input").value.trim().toUpperCase();
+  var msg = document.getElementById("unlock-msg");
+  if (input === "NUTRI2025") {
+    localStorage.setItem("nutricore_premium", "true");
+    msg.textContent = "✅ Premium unlocked!";
+    msg.style.color = "#4ade80";
+    setTimeout(function() {
+      document.getElementById("premium-buy").style.display = "none";
+      document.getElementById("premium-unlocked").style.display = "block";
+    }, 1200);
+  } else {
+    msg.textContent = "❌ Wrong code. Check your WhatsApp.";
+    msg.style.color = "#f87171";
+  }
+}
+
+function revokePremium() {
+  localStorage.removeItem("nutricore_premium");
+  document.getElementById("premium-buy").style.display = "block";
+  document.getElementById("premium-unlocked").style.display = "none";
+                               } </script>
 </body>
 </html>
