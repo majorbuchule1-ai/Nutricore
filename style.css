@@ -805,7 +805,7 @@ html, body {
 /* ---------- PREMIUM SECTION ---------- */
 #premium {
   padding: 0 16px 100px
-  min-height: 100vh;
+  
   color: #fff;
 }
 .prem-unlocked {
