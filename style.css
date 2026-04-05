@@ -802,3 +802,111 @@ html, body {
 @keyframes toastOut {
   to { opacity: 0; transform: translateX(-50%) translateY(20px); }
 }
+/* ---------- PREMIUM SECTION ---------- */
+#premium {
+  padding: 20px 16px 100px;
+  min-height: 100vh;
+  color: #fff;
+}
+.prem-unlocked {
+  text-align: center;
+  padding: 40px 20px;
+}
+.prem-badge { font-size: 60px; margin-bottom: 12px; }
+.prem-title { font-size: 28px; font-weight: 800; color: #FFD700; margin: 0 0 6px; }
+.prem-sub { color: #aaa; margin-bottom: 24px; font-size: 15px; }
+.prem-revoke {
+  margin-top: 32px;
+  background: transparent;
+  border: 1px solid #333;
+  color: #555;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.prem-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.prem-star { font-size: 44px; }
+.prem-heading { font-size: 32px; font-weight: 900; margin: 0; line-height: 1; }
+.prem-tagline { color: #888; font-size: 13px; margin: 4px 0 0; }
+.prem-card {
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 28px;
+}
+.prem-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 12px;
+}
+.prem-features { list-style: none; padding: 0; margin: 0 0 16px; }
+.prem-features li { font-size: 15px; padding: 5px 0; color: #ddd; }
+.prem-price { font-size: 36px; font-weight: 900; color: #FFD700; }
+.prem-price span { font-size: 16px; color: #888; font-weight: 400; }
+.prem-step {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 24px;
+  align-items: flex-start;
+}
+.step-num {
+  min-width: 32px; height: 32px;
+  background: #FFD700;
+  color: #000;
+  border-radius: 50%;
+  font-weight: 900;
+  font-size: 15px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-title { font-weight: 700; font-size: 15px; margin: 0 0 4px; }
+.step-detail { font-size: 13px; color: #aaa; margin: 2px 0; }
+.wa-button {
+  display: inline-block;
+  margin-top: 10px;
+  background: #25D366;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.code-row { display: flex; gap: 8px; margin-top: 10px; }
+.code-input {
+  flex: 1;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  padding: 12px 14px;
+  outline: none;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+.code-input:focus { border-color: #FFD700; }
+.code-btn {
+  background: #FFD700;
+  color: #000;
+  font-weight: 900;
+  font-size: 14px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.unlock-msg { font-size: 13px; margin-top: 8px; min-height: 18px; }
+.hidden { display: none !important; }
