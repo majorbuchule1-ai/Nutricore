@@ -207,22 +207,67 @@
   </div>
 <!-- PREMIUM SECTION -->
 <section id="premium" class="section">
-  <div class="section-header">
-    <h2>⭐ Go Premium</h2>
-    <p class="section-sub">Unlock the full NutriCore experience</p>
+
+  <div id="premium-unlocked" class="prem-unlocked hidden">
+    <div class="prem-badge">⭐</div>
+    <h2 class="prem-title">You're Premium</h2>
+    <p class="prem-sub">Full NutriCore experience unlocked</p>
+    <ul class="prem-features">
+      <li>✅ 40+ South African meals</li>
+      <li>✅ Progress tracker</li>
+      <li>✅ Personalized meal plans</li>
+      <li>✅ No ads forever</li>
+    </ul>
+    <button class="prem-revoke" onclick="revokePremium()">Remove Premium Access</button>
   </div>
-  <div class="premium-card">
-    <h3>Premium Features</h3>
-    <p>✅ 40+ South African meals</p>
-    <p>✅ Progress tracker</p>
-    <p>✅ Personalized meal plans</p>
-    <p>✅ No ads forever</p>
-    <h2>R49/month</h2>
-    <p>Pay to: <strong>Standard Bank</strong></p>
-    <p>Account: <strong>10257742628</strong></p>
-    <p>Reference: <strong>NutriCore Premium</strong></p>
-    <p>WhatsApp proof to: <strong>Buchule</strong></p>
+
+  <div id="premium-buy">
+    <div class="prem-hero">
+      <span class="prem-star">⭐</span>
+      <div>
+        <h2 class="prem-heading">Go Premium</h2>
+        <p class="prem-tagline">Unlock the full NutriCore experience</p>
+      </div>
+    </div>
+    <div class="prem-card">
+      <p class="prem-label">Premium Features</p>
+      <ul class="prem-features">
+        <li>✅ 40+ South African meals</li>
+        <li>✅ Progress tracker</li>
+        <li>✅ Personalized meal plans</li>
+        <li>✅ No ads forever</li>
+      </ul>
+      <div class="prem-price">R49<span>/month</span></div>
+    </div>
+    <div class="prem-step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <p class="step-title">Pay via EFT</p>
+        <p class="step-detail">Bank: <strong>Standard Bank</strong></p>
+        <p class="step-detail">Account: <strong>10257742628</strong></p>
+        <p class="step-detail">Reference: <strong>Your name + NutriCore</strong></p>
+      </div>
+    </div>
+    <div class="prem-step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <p class="step-title">Send proof of payment</p>
+        <a class="wa-button" onclick="openWhatsApp()">📲 I've Paid — Send via WhatsApp</a>
+      </div>
+    </div>
+    <div class="prem-step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <p class="step-title">Enter your unlock code</p>
+        <div class="code-row">
+          <input id="unlock-input" class="code-input" type="text" placeholder="e.g. NUTRI2025" maxlength="12" oninput="this.value=this.value.toUpperCase()"/>
+          <button class="code-btn" onclick="unlockPremium()">Unlock</button>
+        </div>
+        <p id="unlock-msg" class="unlock-msg"></p>
+      </div>
+    </div>
   </div>
+
 </section>
   <!-- RECIPE MODAL -->
   <div id="recipe-modal" class="modal hidden">
