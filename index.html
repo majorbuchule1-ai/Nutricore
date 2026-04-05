@@ -311,7 +311,7 @@ function unlockPremium() {
 function revokePremium() {
   localStorage.removeItem("nutricore_premium");
   var el = document.getElementById("premium-unlocked"); el.classList.remove("hidden"); el.style.display = "block";
-  document.getElementById("premium-unlocked").style.display = "none";
+document.getElementById("premium-buy").classList.add("hidden");
                                } </script>
 </body>
 </html>
