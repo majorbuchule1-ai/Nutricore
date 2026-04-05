@@ -300,7 +300,7 @@ function showSection(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(name).classList.add('active');
-  document.getElementById('nav-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');window.scrollTo(0, 0);
 }
 
 // ===== LEARN =====
