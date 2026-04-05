@@ -268,12 +268,7 @@
     </div>
   </div>
 
-</section>if (localStorage.getItem("nutricore_premium") === "true") {
-  document.getElementById("premium-buy").classList.add("hidden");
-  var el = document.getElementById("premium-unlocked");
-  el.classList.remove("hidden");
-  el.style.display = "block";
-}
+</section>
   <!-- RECIPE MODAL -->
   <div id="recipe-modal" class="modal hidden">
     <div class="modal-content">
@@ -283,7 +278,12 @@
   </div>
 
   <script src="app.js"></script>
-  <script>
+  <script>if (localStorage.getItem("nutricore_premium") === "true") {
+  document.getElementById("premium-buy").classList.add("hidden");
+  var el = document.getElementById("premium-unlocked");
+  el.classList.remove("hidden");
+  el.style.display = "block";
+}
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
