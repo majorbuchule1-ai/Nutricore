@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#080d0a"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>NutriCore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+:root{
+  --bg:       #080d0a;
+  --s1:       #101710;
+  --s2:       #172117;
+  --s3:       #1e2c1e;
+  --border:   rgba(255,255,255,0.07);
+  --muted:    #637063;
+  --white:    #e6f0e6;
+  --accent:   #a3e635;
+  --sky:      #38bdf8;
+  --warm:     #fbbf24;
+  --coral:    #fb7185;
+  --brand:    #22c55e;
+  --ff-disp:  'Syne', sans-serif;
+  --ff-body:  'DM Sans', sans-serif;
+  --ff-mono:  'DM Mono', monospace;
+}
+html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(--white);font-family:var(--ff-body);font-size:16px}
+::-webkit-scrollbar{display:none}
+*{scrollbar-width:none}
+
+/* ── layout ── */
+#app{display:flex;flex-direction:column;height:100%;max-width:430px;margin:0 auto;position:relative}
+#topbar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:14px 18px 8px;padding-top:max(14px,env(safe-area-inset-top))}
+#screen{flex:1;overflow-y:auto;padding:6px 16px 100px}
+#navbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:100;padding-bottom:env(safe-area-inset-bottom,0)}
+
+/* ── glass ── */
+.glass{background:rgba(255,255,255,0.042);border:1px solid var(--border);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.card{border-radius:18px;padding:16px;margin-bottom:14px}
+.card.glass{}
+
+/* ── typography ── */
+.disp{font-family:var(--ff-disp)}
+.mono{font-family:var(--ff-mono)}
+h1{font-family:var(--ff-disp);font-weight:800;font-size:24px;color:var(--white)}
+.label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:var(--ff-disp);font-weight:600}
+
+/* ── nav ── */
+.nav-inner{display:flex;align-items:center;justify-content:space-around;background:rgba(10,18,10,0.92);border-top:1px solid var(--border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:8px 4px 10px}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;border-radius:12px;border:none;background:none;color:var(--muted);font-family:var(--ff-disp);font-size:10px;font-weight:600;letter-spacing:.06em;cursor:pointer;transition:color .2s;-webkit-tap-highlight-color:transparent}
+.nav-btn svg{width:22px;height:22px;transition:all .2s}
+.nav-btn.active{color:var(--accent)}
+.nav-btn:active{transform:scale(0.9)}
+
+/* ── progress bar ── */
+.bar-track{width:100%;background:rgba(255,255,255,0.1);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;border-radius:99px;transition:width .7s cubic-bezier(.22,1,.36,1)}
+
+/* ── score ring ── */
+.ring-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.ring-center{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-num{font-family:var(--ff-disp);font-weight:800;font-size:30px;color:var(--white);line-height:1}
+.ring-unit{font-size:10px;color:var(--muted);letter-spacing:.1em}
+
+/* ── buttons ── */
+.btn-primary{width:100%;padding:14px;border-radius:14px;border:none;background:var(--accent);color:#080d0a;font-family:var(--ff-disp);font-weight:700;font-size:14px;cursor:pointer;letter-spacing:.04em;transition:all .15s;box-shadow:0 0 20px rgba(163,230,53,.25)}
+.btn-primary:active{transform:scale(0.95)}
+.btn-primary:disabled{background:rgba(255,255,255,.1);color:var(--muted);box-shadow:none;cursor:not-allowed}
+.btn-ghost{padding:7px 14px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--accent);font-family:var(--ff-disp);font-weight:600;font-size:12px;cursor:pointer;transition:all .15s}
+.btn-ghost:active{transform:scale(0.93)}
+
+/* ── inputs ── */
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.05em}
+.field input,.field select{width:100%;padding:12px 14px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:12px;color:var(--white);font-family:var(--ff-body);font-size:14px;outline:none;-webkit-appearance:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:rgba(163,230,53,.4)}
+.field input::placeholder{color:var(--muted)}
+.field select option{background:#1e2c1e}
+
+/* ── toggle ── */
+.toggle{position:relative;width:44px;height:24px;border-radius:99px;border:none;cursor:pointer;transition:background .3s;flex-shrink:0}
+.toggle.on{background:var(--accent)}
+.toggle.off{background:rgba(255,255,255,.15)}
+.toggle-knob{position:absolute;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .3s;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.toggle.on .toggle-knob{left:23px}
+.toggle.off .toggle-knob{left:3px}
+
+/* ── glass card ── */
+.stat-card{background:rgba(255,255,255,.042);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:2px}
+.stat-val{font-family:var(--ff-disp);font-weight:800;font-size:26px}
+.stat-unit{font-size:11px;color:var(--muted)}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* ── meal card ── */
+.meal-form{display:flex;flex-direction:column;gap:12px}
+.macro-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ── glass grid ── */
+.glass-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.glass-cell{aspect-ratio:1;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;border:1px solid;transition:all .25s;font-size:26px}
+.glass-cell:active{transform:scale(0.88)}
+.glass-cell.filled{background:rgba(56,189,248,.15);border-color:rgba(56,189,248,.4);box-shadow:0 0 14px rgba(56,189,248,.2)}
+.glass-cell.empty{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
+.glass-num{font-family:var(--ff-mono);font-size:10px}
+.glass-cell.filled .glass-num{color:var(--sky)}
+.glass-cell.empty .glass-num{color:var(--muted)}
+
+/* ── week chart ── */
+.chart-wrap{display:flex;align-items:flex-end;gap:6px;height:100px}
+.chart-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%}
+.chart-score{font-family:var(--ff-mono);font-size:9px}
+.chart-bar-wrap{flex:1;width:100%;display:flex;align-items:flex-end}
+.chart-bar{width:100%;border-radius:6px 6px 0 0;min-height:3px;transition:height .7s cubic-bezier(.22,1,.36,1)}
+.chart-day{font-family:var(--ff-disp);font-weight:700;font-size:10px}
+
+/* ── misc ── */
+.divider{height:1px;background:var(--border);margin:10px 0}
+.row{display:flex;align-items:center;justify-content:space-between}
+.row+.row{padding-top:14px;border-top:1px solid var(--border)}
+.gradient-text{background:linear-gradient(135deg,#a3e635,#4ade80,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.glow-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.slide-in{animation:slideUp .35s cubic-bezier(.22,1,.36,1) both}
+@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.streak-badge{display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.042);border:1px solid var(--border);border-radius:16px;padding:16px;gap:4px;flex:1}
+.reminder-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+.reminder-row+.reminder-row{border-top:1px solid var(--border)}
+.tag{display:inline-flex;align-items:center;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:11px;color:var(--muted);font-family:var(--ff-mono)}
+.stepper{display:flex;align-items:center;gap:8px}
+.step-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--white);font-size:20px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.step-btn:active{transform:scale(.88);background:rgba(163,230,53,.15)}
+.step-val{width:44px;text-align:center;font-family:var(--ff-disp);font-weight:700;font-size:20px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#a3e635,#22c55e);display:flex;align-items:center;justify-content:center">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.5" stroke="white" stroke-width="1.5"/><path d="M10 6v4l2.5 2" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <span style="font-family:var(--ff-disp);font-weight:800;font-size:18px;letter-spacing:-.02em">NutriCore</span>
+    </div>
+    <div class="glass" style="border-radius:99px;padding:6px 14px;display:flex;align-items:center;gap:8px">
+      <div class="glow-dot"></div>
+      <span class="mono" style="font-size:13px" id="topbar-score">0<span style="color:var(--muted)">/100</span></span>
+    </div>
+  </div>
+
+  <div id="screen"></div>
+
+  <div id="navbar">
+    <div class="nav-inner">
+      <button class="nav-btn active" data-tab="home" onclick="switchTab('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke-linejoin="round"/><path d="M9 21V12h6v9" stroke-linejoin="round"/></svg>
+        Home
+      </button>
+      <button class="nav-btn" data-tab="meals" onclick="switchTab('meals')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8h1a4 4 0 010 8h-1" stroke-linecap="round"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z" stroke-linejoin="round"/><line x1="6" y1="1" x2="6" y2="4" stroke-linecap="round"/><line x1="10" y1="1" x2="10" y2="4" stroke-linecap="round"/><line x1="14" y1="1" x2="14" y2="4" stroke-linecap="round"/></svg>
+        Meals
+      </button>
+      <button class="nav-btn" data-tab="hydration" onclick="switchTab('hydration')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" stroke-linejoin="round"/></svg>
+        Water
+      </button>
+      <button class="nav-btn" data-tab="progress" onclick="switchTab('progress')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Progress
+      </button>
+      <button class="nav-btn" data-tab="profile" onclick="switchTab('profile')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="7" r="4"/></svg>
+        Profile
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  STORAGE & UTILS
+// ══════════════════════════════════════════════
+const todayKey = () => new Date().toISOString().slice(0,10)
+const yesterdayKey = () => { const d=new Date();d.setDate(d.getDate()-1);return d.toISOString().slice(0,10) }
+const getLast7Days = () => Array.from({length:7},(_,i)=>{ const d=new Date();d.setDate(d.getDate()-(6-i));return d.toISOString().slice(0,10) })
+const shortDay = s => new Date(s+'T00:00:00').toLocaleDateString('en-US',{weekday:'short'})
+const formatDate = s => new Date(s+'T00:00:00').toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})
+const fmt12 = t => { const [h,m]=t.split(':').map(Number);return `${h%12||12}:${String(m).padStart(2,'0')} ${h<12?'AM':'PM'}` }
+
+function load(key, def){ try{ const v=localStorage.getItem(key);return v?JSON.parse(v):def }catch{return def} }
+function save(key, val){ try{ localStorage.setItem(key,JSON.stringify(val)) }catch{} }
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let profile   = load('nc_profile',   {name:'',goal:'Maintain',waterTarget:8,mealTarget:3})
+let waterLogs = load('nc_waterLogs', {})
+let mealLogs  = load('nc_mealLogs',  {})
+let streaks   = load('nc_streaks',   {water:0,meal:0,lastWaterDate:null,lastMealDate:null})
+let reminders = load('nc_reminders', [
+  {time:'06:30',enabled:true},{time:'09:00',enabled:true},{time:'11:30',enabled:true},
+  {time:'13:30',enabled:true},{time:'15:30',enabled:true},{time:'17:30',enabled:true},
+  {time:'19:30',enabled:true},{time:'21:00',enabled:true}
+])
+let weekScores = load('nc_weekScores',{})
+
+const MEAL_SLOTS = [
+  {id:'breakfast',label:'Breakfast',time:'Morning',  emoji:'🌅'},
+  {id:'lunch',    label:'Lunch',    time:'Afternoon', emoji:'☀️'},
+  {id:'dinner',   label:'Dinner',   time:'Evening',   emoji:'🌙'},
+]
+
+// Editing state for meal cards
+let mealEditing = {breakfast:false, lunch:false, dinner:false}
+
+function todayWater(){ return waterLogs[todayKey()]??0 }
+function todayMeals(){ return mealLogs[todayKey()]??{breakfast:null,lunch:null,dinner:null} }
+function mealCount(){ return Object.values(todayMeals()).filter(Boolean).length }
+
+function calcScore(water=todayWater(), meals=todayMeals()){
+  const mc = Object.values(meals).filter(Boolean).length
+  const w = Math.min(water/Math.max(profile.waterTarget,1),1)*50
+  const m = Math.min(mc  /Math.max(profile.mealTarget, 1),1)*50
+  return Math.round(w+m)
+}
+
+function syncWeekScore(){
+  const today=todayKey(); const s=calcScore()
+  if(weekScores[today]!==s){ weekScores[today]=s; save('nc_weekScores',weekScores) }
+}
+
+function updateTopbar(){
+  const s=calcScore()
+  document.getElementById('topbar-score').innerHTML=`${s}<span style="color:var(--muted)">/100</span>`
+}
+
+// ══════════════════════════════════════════════
+//  WATER ACTIONS
+// ══════════════════════════════════════════════
+function addWater(){
+  const today=todayKey(),yest=yesterdayKey()
+  const cur=waterLogs[today]??0
+  if(cur>=profile.waterTarget) return
+  const next=cur+1
+  waterLogs[today]=next; save('nc_waterLogs',waterLogs)
+  if(next>=profile.waterTarget){
+    const isConsec=streaks.lastWaterDate===yest
+    streaks.water=isConsec?streaks.water+1:1
+    streaks.lastWaterDate=today
+    save('nc_streaks',streaks)
+  }
+  syncWeekScore(); updateTopbar()
+  if(currentTab==='hydration') renderHydration()
+  else if(currentTab==='home') renderHome()
+}
+function removeWater(){
+  const today=todayKey(),cur=waterLogs[today]??0
+  if(cur<=0) return
+  waterLogs[today]=cur-1; save('nc_waterLogs',waterLogs)
+  syncWeekScore(); updateTopbar()
+  if(currentTab==='hydration') renderHydration()
+  else if(currentTab==='home') renderHome()
+}
+
+// ══════════════════════════════════════════════
+//  MEAL ACTIONS
+// ══════════════════════════════════════════════
+function saveMeal(slotId, data){
+  const today=todayKey(),yest=yesterdayKey()
+  const dayMeals={...(mealLogs[today]??{breakfast:null,lunch:null,dinner:null}),[slotId]:data}
+  mealLogs[today]=dayMeals; save('nc_mealLogs',mealLogs)
+  const allDone=Object.values(dayMeals).filter(Boolean).length>=profile.mealTarget
+  if(allDone){
+    const isConsec=streaks.lastMealDate===yest
+    streaks.meal=isConsec?streaks.meal+1:1
+    streaks.lastMealDate=today
+    save('nc_streaks',streaks)
+  }
+  mealEditing[slotId]=false
+  syncWeekScore(); updateTopbar()
+  if(currentTab==='meals') renderMeals()
+  else if(currentTab==='home') renderHome()
+}
+function clearMeal(slotId){
+  const today=todayKey()
+  const dayMeals={...(mealLogs[today]??{}), [slotId]:null}
+  mealLogs[today]=dayMeals; save('nc_mealLogs',mealLogs)
+  mealEditing[slotId]=true
+  syncWeekScore(); updateTopbar()
+  renderMeals()
+}
+
+// ══════════════════════════════════════════════
+//  TAB ROUTING
+// ══════════════════════════════════════════════
+let currentTab='home'
+function switchTab(tab){
+  currentTab=tab
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab))
+  const scr=document.getElementById('screen')
+  scr.scrollTop=0
+  switch(tab){
+    case 'home':      renderHome();      break
+    case 'meals':     renderMeals();     break
+    case 'hydration': renderHydration(); break
+    case 'progress':  renderProgress();  break
+    case 'profile':   renderProfile();   break
+  }
+}
+
+// ══════════════════════════════════════════════
+//  HOME
+// ══════════════════════════════════════════════
+function renderHome(){
+  const score=calcScore()
+  const wt=profile.waterTarget??8, mt=profile.mealTarget??3
+  const w=todayWater(), mc=mealCount()
+  const wPct=Math.min((w/wt)*100,100), mPct=Math.min((mc/mt)*100,100)
+  const h=new Date().getHours()
+  const greet=h<12?'Good morning':h<17?'Good afternoon':'Good evening'
+  const name=profile.name?profile.name.split(' ')[0]:''
+  const scoreColor=score>=80?'#a3e635':score>=50?'#fbbf24':'#fb7185'
+  const r=42,circ=2*Math.PI*r,offset=circ-(score/100)*circ
+
+  const meals=todayMeals()
+  const mealDots=MEAL_SLOTS.map(s=>`
+    <div style="flex:1;border-radius:12px;padding:10px 6px;text-align:center;background:${meals[s.id]?'rgba(251,191,36,.12)':'rgba(255,255,255,.04)'};border:1px solid ${meals[s.id]?'rgba(251,191,36,.3)':'rgba(255,255,255,.06)'}">
+      <div style="font-size:18px">${s.emoji}</div>
+      <div style="font-size:10px;font-weight:600;font-family:var(--ff-disp);color:${meals[s.id]?'var(--warm)':'var(--muted)'};margin-top:3px">${s.label}</div>
+      ${meals[s.id]?`<div style="font-size:9px;color:rgba(251,191,36,.6);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px">${meals[s.id].name}</div>`:''}
+    </div>`).join('')
+
+  document.getElementById('screen').innerHTML=`<div class="slide-in">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <div class="mono" style="font-size:11px;color:var(--muted);margin-bottom:3px">${formatDate(todayKey())}</div>
+        <h1>${greet}${name?' '+name:''} 👋</h1>
+      </div>
+      <div class="tag">${profile.goal}</div>
+    </div>
+
+    <!-- Score card -->
+    <div class="card glass" style="position:relative;overflow:hidden">
+      <div style="position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:rgba(163,230,53,.06);filter:blur(20px);pointer-events:none"></div>
+      <div style="display:flex;align-items:center;gap:18px">
+        <div class="ring-wrap" style="flex-shrink:0">
+          <svg width="108" height="108" viewBox="0 0 100 100" style="transform:rotate(-90deg)">
+            <circle cx="50" cy="50" r="${r}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="7"/>
+            <circle cx="50" cy="50" r="${r}" fill="none" stroke="${scoreColor}" stroke-width="7"
+              stroke-linecap="round" stroke-dasharray="${circ.toFixed(2)}"
+              stroke-dashoffset="${offset.toFixed(2)}"
+              style="transition:stroke-dashoffset .8s ease,stroke .4s;filter:drop-shadow(0 0 5px ${scoreColor}80)"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-num">${score}</div>
+            <div class="ring-unit">SCORE</div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:var(--ff-disp);font-weight:700;font-size:17px;color:var(--white)">Daily Consistency</div>
+          <div style="font-size:12px;color:${scoreColor};margin-top:2px">${score>=80?'Excellent 🔥':score>=50?'Keep going 💪':'Just starting 🌱'}</div>
+          <div style="display:flex;gap:16px;margin-top:14px">
+            <div style="text-align:center">
+              <div style="font-family:var(--ff-disp);font-weight:800;font-size:22px;color:var(--sky)">${streaks.water}</div>
+              <div style="font-size:10px;color:var(--muted)">💧 streak</div>
+            </div>
+            <div style="width:1px;background:var(--border)"></div>
+            <div style="text-align:center">
+              <div style="font-family:var(--ff-disp);font-weight:800;font-size:22px;color:var(--warm)">${streaks.meal}</div>
+              <div style="font-size:10px;color:var(--muted)">🍽️ streak</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hydration -->
+    <div class="label" style="margin-bottom:10px">Today's Targets</div>
+    <div class="card glass">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">💧</span><span style="font-weight:500;font-size:14px">Hydration</span></div>
+        <span class="mono" style="font-size:13px;color:var(--sky)">${w}<span style="color:var(--muted)">/${wt}</span></span>
+      </div>
+      <div class="bar-track" style="height:8px"><div class="bar-fill" style="height:8px;width:${wPct}%;background:var(--sky)"></div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
+        ${Array.from({length:wt}).map((_,i)=>`<span onclick="addWater()" style="font-size:22px;cursor:pointer;opacity:${i<w?1:.22};filter:${i<w?'':'grayscale(1)'};transition:all .2s;${i<w?'filter:drop-shadow(0 0 4px rgba(56,189,248,.8))':''}"  >💧</span>`).join('')}
+      </div>
+    </div>
+
+    <!-- Meals -->
+    <div class="card glass">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">🍽️</span><span style="font-weight:500;font-size:14px">Meals</span></div>
+        <span class="mono" style="font-size:13px;color:var(--warm)">${mc}<span style="color:var(--muted)">/${mt}</span></span>
+      </div>
+      <div class="bar-track" style="height:8px"><div class="bar-fill" style="height:8px;width:${mPct}%;background:var(--warm)"></div></div>
+      <div style="display:flex;gap:8px;margin-top:12px">${mealDots}</div>
+    </div>
+
+    <!-- Tip -->
+    <div class="card glass" style="border-left:2px solid rgba(163,230,53,.4);padding:12px 14px">
+      <p style="font-size:12px;color:var(--muted);line-height:1.6">💡 <span style="color:var(--white);font-weight:500">Tip:</span> Staying consistent beats perfection. Log every meal and glass to build your streak.</p>
+    </div>
+  </div>`
+}
+
+// ══════════════════════════════════════════════
+//  MEALS
+// ══════════════════════════════════════════════
+function renderMeals(){
+  const meals=todayMeals()
+  const mc=mealCount(), mt=profile.mealTarget??3
+
+  // Calc totals
+  const allM=Object.values(meals).filter(Boolean)
+  const totalCal=allM.reduce((a,m)=>a+(parseFloat(m.calories)||0),0)
+  const totalPro=allM.reduce((a,m)=>a+(parseFloat(m.protein)||0),0)
+
+  const macroBar=(totalCal||totalPro)&&mc>0?`
+    <div class="card glass" style="display:flex;gap:0">
+      ${totalCal?`<div style="flex:1;text-align:center"><div style="font-family:var(--ff-disp);font-weight:800;font-size:28px;color:var(--warm)">${Math.round(totalCal)}</div><div style="font-size:11px;color:var(--muted)">kcal today</div></div>`:''}
+      ${totalCal&&totalPro?`<div style="width:1px;background:var(--border);margin:0 10px"></div>`:''}
+      ${totalPro?`<div style="flex:1;text-align:center"><div style="font-family:var(--ff-disp);font-weight:800;font-size:28px;color:var(--accent)">${Math.round(totalPro)}g</div><div style="font-size:11px;color:var(--muted)">protein today</div></div>`:''}
+    </div>`:'';
+
+  const slotCards=MEAL_SLOTS.map(slot=>{
+    const meal=meals[slot.id]
+    const editing=mealEditing[slot.id]||(meal===null)
+    if(meal&&!editing){
+      return `<div class="card glass" style="border:1px solid rgba(251,191,36,.2)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:26px">${slot.emoji}</span>
+            <div><div style="font-family:var(--ff-disp);font-weight:700;font-size:16px">${slot.label}</div><div style="font-size:11px;color:var(--muted)">${slot.time}</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <button class="btn-ghost" onclick="mealEditing['${slot.id}']=true;renderMeals()">Edit</button>
+            <button class="btn-ghost" style="color:var(--coral);border-color:rgba(251,113,133,.3)" onclick="clearMeal('${slot.id}')">Clear</button>
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--warm);box-shadow:0 0 6px var(--warm);display:inline-block"></span>
+          </div>
+        </div>
+        <div style="background:rgba(251,191,36,.1);border-radius:12px;padding:12px 14px">
+          <div style="font-weight:500;font-size:14px;color:var(--white)">${meal.name}</div>
+          <div style="display:flex;gap:14px;margin-top:6px">
+            ${meal.calories?`<span style="font-size:12px;color:var(--muted)">🔥 <span style="color:var(--warm);font-weight:500">${meal.calories}</span> kcal</span>`:''}
+            ${meal.protein?`<span style="font-size:12px;color:var(--muted)">💪 <span style="color:var(--accent);font-weight:500">${meal.protein}</span>g protein</span>`:''}
+          </div>
+          ${meal.savedAt?`<div style="font-size:10px;color:var(--muted);margin-top:5px">Logged at ${new Date(meal.savedAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</div>`:''}
+        </div>
+      </div>`
+    } else {
+      return `<div class="card glass">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:26px">${slot.emoji}</span>
+            <div><div style="font-family:var(--ff-disp);font-weight:700;font-size:16px">${slot.label}</div><div style="font-size:11px;color:var(--muted)">${slot.time}</div></div>
+          </div>
+          ${meal&&editing?`<button class="btn-ghost" onclick="mealEditing['${slot.id}']=false;renderMeals()" style="font-size:12px">Cancel</button>`:''}
+        </div>
+        <div class="meal-form">
+          <div class="field"><label>Food name *</label><input id="mn-${slot.id}" type="text" placeholder="e.g. ${slot.id==='breakfast'?'Eggs and toast':'slot.id==='lunch'?'Grilled chicken rice':'Salmon with vegetables'}" value="${meal?meal.name:''}" style="font-size:14px"/>
+          <div style="margin-top:8px">
+            <div style="font-size:10px;color:var(--muted);margin-bottom:6px;letter-spacing:.05em;font-weight:500">💡 Quick examples — tap to fill:</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              ${(slot.id==='breakfast'?['🥚 Eggs & toast','🥣 Oatmeal & berries','🥞 Pancakes','🍌 Banana smoothie','🧇 Waffles & fruit','🥗 Yogurt & granola']:slot.id==='lunch'?['🍗 Grilled chicken & rice','🥙 Veggie wrap','🍜 Noodle soup','🥗 Caesar salad','🫔 Tuna sandwich','🍱 Rice & beans']:['🐟 Salmon & veggies','🍝 Pasta bolognese','🍛 Chicken curry & rice','🥩 Steak & potatoes','🥗 Lentil soup','🌮 Beef tacos']).map(ex=>`<button type="button" onclick="document.getElementById('mn-${slot.id}').value='${ex.replace(/'/g,"\\'")}'" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 10px;font-size:11px;color:var(--white);cursor:pointer;font-family:var(--ff-body);transition:all .15s;white-space:nowrap" onmousedown="this.style.background='rgba(163,230,53,.15)';this.style.borderColor='rgba(163,230,53,.3)'" onmouseup="this.style.background='rgba(255,255,255,.06)';this.style.borderColor='rgba(255,255,255,.1)'" ontouchstart="this.style.background='rgba(163,230,53,.15)';this.style.borderColor='rgba(163,230,53,.3)'" ontouchend="this.style.background='rgba(255,255,255,.06)';this.style.borderColor='rgba(255,255,255,.1)'">${ex}</button>`).join('')}
+            </div>
+          </div>
+          </div>
+          <div class="macro-row">
+            <div class="field"><label>Calories (optional)</label><input id="mc-${slot.id}" type="number" placeholder="e.g. 350" value="${meal&&meal.calories?meal.calories:''}" inputmode="decimal"/></div>
+            <div class="field"><label>Protein g (optional)</label><input id="mp-${slot.id}" type="number" placeholder="e.g. 20" value="${meal&&meal.protein?meal.protein:''}" inputmode="decimal"/></div>
+          </div>
+          <button class="btn-primary" onclick="
+            const n=document.getElementById('mn-${slot.id}').value.trim();
+            if(!n)return;
+            saveMeal('${slot.id}',{name:n,calories:document.getElementById('mc-${slot.id}').value||null,protein:document.getElementById('mp-${slot.id}').value||null,savedAt:new Date().toISOString()})
+          ">Save ${slot.label}</button>
+        </div>
+      </div>`
+    }
+  }).join('')
+
+  document.getElementById('screen').innerHTML=`<div class="slide-in">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+      <div><h1>Meals</h1><div style="font-size:13px;color:var(--muted);margin-top:2px">${mc} of ${mt} logged today</div></div>
+      <div style="display:flex;gap:5px;align-items:center;margin-top:6px">
+        ${Array.from({length:mt}).map((_,i)=>`<span style="width:8px;height:8px;border-radius:50%;background:${i<mc?'var(--warm)':'rgba(255,255,255,.12)'};${i<mc?'box-shadow:0 0 6px var(--warm)':''}"></span>`).join('')}
+      </div>
+    </div>
+    ${macroBar}
+    ${slotCards}
+  </div>`
+}
+
+// ══════════════════════════════════════════════
+//  HYDRATION
+// ══════════════════════════════════════════════
+function renderHydration(){
+  const w=todayWater(), wt=profile.waterTarget??8
+  const pct=Math.min((w/wt)*100,100)
+
+  const cells=Array.from({length:wt}).map((_,i)=>{
+    const filled=i<w
+    return `<div class="glass-cell ${filled?'filled':'empty'}" onclick="${filled?'removeWater':'addWater'}()">
+      <span>${filled?'💧':'🫙'}</span>
+      <span class="glass-num">${i+1}</span>
+    </div>`
+  }).join('')
+
+  const remRows=reminders.map((r,i)=>`
+    <div class="reminder-row">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="color:var(--sky);font-size:18px">🔔</span>
+        <span class="mono" style="font-size:14px">${fmt12(r.time)}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="toggle ${r.enabled?'on':'off'}" onclick="reminders[${i}].enabled=!reminders[${i}].enabled;save('nc_reminders',reminders);renderHydration()">
+          <div class="toggle-knob"></div>
+        </button>
+        <button onclick="if(confirm('Remove this reminder?')){reminders.splice(${i},1);save('nc_reminders',reminders);renderHydration()}" style="background:none;border:none;color:var(--coral);font-size:18px;cursor:pointer;line-height:1">×</button>
+      </div>
+    </div>`).join('')
+
+  document.getElementById('screen').innerHTML=`<div class="slide-in">
+    <div style="margin-bottom:16px">
+      <h1>Hydration</h1>
+      <div style="font-size:13px;color:var(--muted);margin-top:2px">Daily goal: ${wt} glasses</div>
+    </div>
+
+    <div class="card glass" style="text-align:center;position:relative;overflow:hidden">
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(56,189,248,.05),transparent);pointer-events:none"></div>
+      <div style="font-family:var(--ff-disp);font-weight:800;font-size:72px;color:var(--sky);line-height:1">${w}</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:4px">of ${wt} glasses today</div>
+      <div style="padding:0 10px;margin-top:14px">
+        <div class="bar-track" style="height:10px"><div class="bar-fill" style="height:10px;width:${pct}%;background:var(--sky)"></div></div>
+        <div class="mono" style="font-size:11px;color:var(--muted);margin-top:6px">${Math.round(pct)}% complete</div>
+      </div>
+    </div>
+
+    <div class="card glass">
+      <div class="label" style="margin-bottom:12px">Tap to log · tap filled to undo</div>
+      <div class="glass-grid">${cells}</div>
+    </div>
+
+    <div class="label" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <span>Reminder Times</span>
+      <button class="btn-ghost" style="padding:5px 10px;font-size:11px" onclick="
+        const t=prompt('Add reminder time (e.g. 14:30):');
+        if(!t||!/^\d{1,2}:\d{2}$/.test(t))return;
+        reminders.push({time:t,enabled:true});
+        reminders.sort((a,b)=>a.time.localeCompare(b.time));
+        save('nc_reminders',reminders);renderHydration()
+      ">+ Add</button>
+    </div>
+    <div class="card glass">
+      ${remRows}
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:4px;padding-bottom:4px">Reminders are UI-only — browser notifications not enabled.</div>
+  </div>`
+}
+
+// ══════════════════════════════════════════════
+//  PROGRESS
+// ══════════════════════════════════════════════
+function renderProgress(){
+  const days=getLast7Days(), today=todayKey()
+  const scores=days.map(d=>weekScores[d]??0)
+  const nonZero=scores.filter(v=>v>0)
+  const avg=nonZero.length?Math.round(nonZero.reduce((a,b)=>a+b,0)/nonZero.length):0
+
+  const totalWater=Object.values(waterLogs).reduce((a,b)=>a+b,0)
+  const totalMealsAll=Object.values(mealLogs).reduce((a,day)=>a+Object.values(day).filter(Boolean).length,0)
+  const totalDays=Object.keys(waterLogs).length
+  const perfectDays=Object.keys(waterLogs).filter(d=>{
+    const wOk=(waterLogs[d]??0)>=profile.waterTarget
+    const mOk=Object.values(mealLogs[d]??{}).filter(Boolean).length>=profile.mealTarget
+    return wOk&&mOk
+  }).length
+
+  const bars=days.map((d,i)=>{
+    const s=scores[i]
+    const isToday=d===today
+    const color=s>=80?'var(--accent)':s>=50?'var(--warm)':s>0?'var(--coral)':'rgba(255,255,255,0.1)'
+    const h=s+'%'
+    return `<div class="chart-col">
+      <div class="chart-score" style="color:${isToday?'var(--accent)':'var(--muted)'}">${s||'—'}</div>
+      <div class="chart-bar-wrap">
+        <div class="chart-bar" style="background:${color};height:${s?Math.max(s,4):3}px;width:100%"></div>
+      </div>
+      <div class="chart-day" style="color:${isToday?'var(--accent)':'var(--muted)'}">${shortDay(d)}</div>
+    </div>`
+  }).join('')
+
+  const scoreColor=avg>=80?'var(--accent)':avg>=50?'var(--warm)':'var(--coral)'
+
+  document.getElementById('screen').innerHTML=`<div class="slide-in">
+    <div style="margin-bottom:16px">
+      <h1>Progress</h1>
+      <div style="font-size:13px;color:var(--muted);margin-top:2px">Your consistency over time</div>
+    </div>
+
+    <!-- Week chart -->
+    <div class="card glass">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div class="label">Weekly Score</div>
+        <div style="font-size:11px;color:var(--muted)">Last 7 days</div>
+      </div>
+      <div class="chart-wrap">${bars}</div>
+      <div style="display:flex;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+        <span style="font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--accent);display:inline-block"></span>80–100</span>
+        <span style="font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--warm);display:inline-block"></span>50–79</span>
+        <span style="font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:2px;background:var(--coral);display:inline-block"></span>1–49</span>
+      </div>
+    </div>
+
+    <!-- Avg -->
+    <div class="card glass" style="text-align:center;position:relative;overflow:hidden">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(163,230,53,.05),transparent);pointer-events:none"></div>
+      <div class="label">7-day average</div>
+      <div style="font-family:var(--ff-disp);font-weight:800;font-size:64px;margin:4px 0" class="gradient-text">${avg}</div>
+      <div style="font-size:12px;color:var(--muted)">consistency score</div>
+    </div>
+
+    <!-- Streaks -->
+    <div class="label" style="margin-bottom:10px">Current Streaks</div>
+    <div style="display:flex;gap:10px;margin-bottom:14px">
+      <div class="streak-badge">
+        <span style="font-size:28px">💧</span>
+        <div style="font-family:var(--ff-disp);font-weight:800;font-size:32px;color:var(--sky)">${streaks.water}</div>
+        <div style="font-size:11px;color:var(--muted)">day water streak</div>
+      </div>
+      <div class="streak-badge">
+        <span style="font-size:28px">🍽️</span>
+        <div style="font-family:var(--ff-disp);font-weight:800;font-size:32px;color:var(--warm)">${streaks.meal}</div>
+        <div style="font-size:11px;color:var(--muted)">day meal streak</div>
+      </div>
+    </div>
+
+    <!-- Stats grid -->
+    <div class="label" style="margin-bottom:10px">All Time</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div class="stat-card"><div class="stat-val" style="color:var(--sky)">${totalWater}</div><div class="stat-unit">glasses</div><div class="stat-lbl">Total water logged</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--warm)">${totalMealsAll}</div><div class="stat-unit">meals</div><div class="stat-lbl">Total meals logged</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--accent)">${totalDays}</div><div class="stat-unit">days</div><div class="stat-lbl">Days tracked</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--coral)">${perfectDays}</div><div class="stat-unit">days</div><div class="stat-lbl">Perfect days</div></div>
+    </div>
+  </div>`
+}
+
+// ══════════════════════════════════════════════
+//  PROFILE
+// ══════════════════════════════════════════════
+function renderProfile(){
+  const initials=profile.name?profile.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase():'?'
+
+  document.getElementById('screen').innerHTML=`<div class="slide-in">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+      <div style="width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,rgba(163,230,53,.3),rgba(34,197,94,.2));border:1px solid rgba(163,230,53,.25);display:flex;align-items:center;justify-content:center;font-family:var(--ff-disp);font-weight:800;font-size:22px;color:var(--accent);flex-shrink:0">${initials}</div>
+      <div>
+        <h1 style="font-size:22px">${profile.name||'Your Profile'}</h1>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">${profile.goal} · ${profile.waterTarget}💧 · ${profile.mealTarget}🍽️</div>
+      </div>
+    </div>
+
+    <!-- Personal -->
+    <div class="card glass">
+      <div class="label" style="margin-bottom:14px">Personal</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="field"><label>Your name</label><input id="p-name" type="text" placeholder="e.g. Alex Rivera" value="${profile.name||''}"/></div>
+        <div class="field">
+          <label>Goal</label>
+          <select id="p-goal">
+            <option value="Maintain" ${profile.goal==='Maintain'?'selected':''}>⚖️ Maintain weight</option>
+            <option value="Lose"     ${profile.goal==='Lose'    ?'selected':''}>📉 Lose weight</option>
+            <option value="Gain"     ${profile.goal==='Gain'    ?'selected':''}>📈 Gain weight</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Targets -->
+    <div class="card glass">
+      <div class="label" style="margin-bottom:14px">Daily Targets</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:500">Water glasses</div>
+          <div class="stepper">
+            <button class="step-btn" onclick="const v=parseInt(document.getElementById('p-wt').textContent);if(v>1)document.getElementById('p-wt').textContent=v-1">−</button>
+            <div id="p-wt" class="step-val" style="color:var(--sky)">${profile.waterTarget}</div>
+            <button class="step-btn" onclick="const v=parseInt(document.getElementById('p-wt').textContent);if(v<20)document.getElementById('p-wt').textContent=v+1">+</button>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:500">Meal slots</div>
+          <div class="stepper">
+            <button class="step-btn" onclick="const v=parseInt(document.getElementById('p-mt').textContent);if(v>1)document.getElementById('p-mt').textContent=v-1">−</button>
+            <div id="p-mt" class="step-val" style="color:var(--warm)">${profile.mealTarget}</div>
+            <button class="step-btn" onclick="const v=parseInt(document.getElementById('p-mt').textContent);if(v<6)document.getElementById('p-mt').textContent=v+1">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formula -->
+    <div class="card glass" style="border:1px solid rgba(255,255,255,.08)">
+      <div class="label" style="margin-bottom:10px">Score Formula</div>
+      <div style="background:var(--s2);border-radius:10px;padding:12px;font-family:var(--ff-mono);font-size:12px;color:var(--muted);line-height:1.8">
+        <span style="color:var(--accent)">score</span> = (<span style="color:var(--sky)">water</span> / target) × 50<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ (<span style="color:var(--warm)">meals</span> / target) × 50<br>
+        <span style="color:rgba(255,255,255,.25)">— max 100 pts per day</span>
+      </div>
+    </div>
+
+    <!-- Save -->
+    <button class="btn-primary" id="save-btn" onclick="
+      const n=document.getElementById('p-name').value.trim();
+      const g=document.getElementById('p-goal').value;
+      const wt=Math.max(1,Math.min(20,parseInt(document.getElementById('p-wt').textContent)||8));
+      const mt=Math.max(1,Math.min(6, parseInt(document.getElementById('p-mt').textContent)||3));
+      profile={name:n,goal:g,waterTarget:wt,mealTarget:mt};
+      save('nc_profile',profile);
+      syncWeekScore();updateTopbar();
+      this.textContent='✓ Saved!';
+      setTimeout(()=>{this.textContent='Save Profile'},2000)
+    " style="margin-bottom:12px">Save Profile</button>
+
+    <!-- Danger -->
+    <div class="card glass" style="border:1px solid rgba(251,113,133,.2)">
+      <div class="label" style="margin-bottom:12px">Danger Zone</div>
+      <button onclick="if(confirm('Reset ALL NutriCore data? This cannot be undone.')){['nc_profile','nc_waterLogs','nc_mealLogs','nc_streaks','nc_reminders','nc_weekScores'].forEach(k=>localStorage.removeItem(k));location.reload()}"
+        style="width:100%;padding:12px;border-radius:12px;border:1px solid rgba(251,113,133,.3);background:none;color:var(--coral);font-family:var(--ff-disp);font-weight:600;font-size:13px;cursor:pointer;transition:all .2s">
+        Reset All Data
+      </button>
+    </div>
+
+    <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:8px;padding-bottom:8px">
+      NutriCore v1.0 · All data stored locally on this device
+    </div>
+  </div>`
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+syncWeekScore()
+updateTopbar()
+renderHome()
+</script>
+</body>
+</html>
